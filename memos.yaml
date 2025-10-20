@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memos
+  template:
+    metadata:
+      labels:
+        app: memos
+    spec:
+      containers:
+        - name: memos
+          image: ghcr.io/usememos/memos:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5230
+          env:
+            - name: MEMOS_PORT
+              value: "5230"
+            - name: MEMOS_MODE
+              value: "prod"
+            - name: MEMOS_DRIVER
+              value: "sqlite"
+          volumeMounts:
+            - name: data
+              mountPath: /var/opt/memos
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: memos-data
+
